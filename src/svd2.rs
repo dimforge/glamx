@@ -1,6 +1,6 @@
 //! SVD decomposition for 2x2 matrices.
 
-#[cfg(all(feature = "libm", not(feature = "std")))]
+#[cfg(not(feature = "std"))]
 use simba::scalar::{ComplexField, RealField};
 
 /// Macro to generate Svd2 for a specific scalar type.

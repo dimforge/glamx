@@ -3,7 +3,7 @@
 //! Uses eigendecomposition of A^T * A to compute singular values and right singular vectors,
 //! then derives left singular vectors from those.
 
-#[cfg(all(feature = "libm", not(feature = "std")))]
+#[cfg(not(feature = "std"))]
 use simba::scalar::ComplexField;
 
 use crate::eigen3::{DSymmetricEigen3, SymmetricEigen3};

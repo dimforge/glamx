@@ -9,7 +9,7 @@
 use glam::Vec3Swizzles;
 use num_traits::float::FloatConst;
 
-#[cfg(all(feature = "libm", not(feature = "std")))]
+#[cfg(not(feature = "std"))]
 use simba::scalar::ComplexField;
 
 /// Macro to generate SymmetricEigen3 for a specific scalar type.

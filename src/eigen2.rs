@@ -4,7 +4,7 @@
 
 use glam::Vec2Swizzles;
 
-#[cfg(all(feature = "libm", not(feature = "std")))]
+#[cfg(not(feature = "std"))]
 use simba::scalar::ComplexField;
 
 /// Macro to generate SymmetricEigen2 for a specific scalar type.

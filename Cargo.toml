@@ -31,6 +31,7 @@ nalgebra = ["dep:nalgebra"]
 
 # Math library features
 libm = ["glam/libm", "simba/libm_force", "num-traits/libm"]
+nostd-libm = ["simba/libm", "glam/nostd-libm"]
 
 # Approx is always available via re-export
 approx = ["dep:approx", "glam/approx"]
