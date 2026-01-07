@@ -9,6 +9,7 @@ macro_rules! impl_pose3 {
         #[doc = concat!("A 3D pose (rotation + translation), representing a rigid body transformation (", stringify!($Real), " precision).")]
         #[derive(Copy, Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+        #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize))]
         $(#[$attr])*
         pub struct $Pose3 {
             /// The rotational part of the pose.

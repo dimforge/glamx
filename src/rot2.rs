@@ -12,6 +12,7 @@ macro_rules! impl_rot2 {
         #[derive(Copy, Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
         #[cfg_attr(feature = "bytemuck", derive(bytemuck::Pod, bytemuck::Zeroable))]
+        #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize))]
         #[repr(C)]
         $(#[$attr])*
         pub struct $Rot2 {
