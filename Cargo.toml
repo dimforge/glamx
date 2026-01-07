@@ -1,6 +1,6 @@
 [package]
 name = "glamx"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Sébastien Crozet <developer@crozet.re>"]
 
 description = "Extensions for glam: Pose2, Pose3, Rot2, and matrix utilities."
