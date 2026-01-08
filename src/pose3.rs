@@ -391,6 +391,68 @@ impl_pose3!(Pose3, Rot3, f32, glam::Vec3, glam::Mat4);
 impl_pose3!(Pose3A, Rot3, f32, glam::Vec3A, glam::Mat4);
 impl_pose3!(DPose3, DRot3, f64, glam::DVec3, glam::DMat4);
 
+// f32 <-> f64 conversions
+impl From<Pose3> for DPose3 {
+    #[inline]
+    fn from(p: Pose3) -> Self {
+        Self {
+            rotation: p.rotation.as_dquat(),
+            translation: p.translation.as_dvec3(),
+        }
+    }
+}
+
+impl From<DPose3> for Pose3 {
+    #[inline]
+    fn from(p: DPose3) -> Self {
+        Self {
+            rotation: p.rotation.as_quat(),
+            translation: p.translation.as_vec3(),
+        }
+    }
+}
+
+impl From<Pose3A> for DPose3 {
+    #[inline]
+    fn from(p: Pose3A) -> Self {
+        Self {
+            rotation: p.rotation.as_dquat(),
+            translation: p.translation.as_dvec3(),
+        }
+    }
+}
+
+impl From<DPose3> for Pose3A {
+    #[inline]
+    fn from(p: DPose3) -> Self {
+        Self {
+            rotation: p.rotation.as_quat(),
+            translation: p.translation.as_vec3a(),
+        }
+    }
+}
+
+// Pose3 <-> Pose3A conversions
+impl From<Pose3> for Pose3A {
+    #[inline]
+    fn from(p: Pose3) -> Self {
+        Self {
+            rotation: p.rotation,
+            translation: p.translation.into(),
+        }
+    }
+}
+
+impl From<Pose3A> for Pose3 {
+    #[inline]
+    fn from(p: Pose3A) -> Self {
+        Self {
+            rotation: p.rotation,
+            translation: p.translation.into(),
+        }
+    }
+}
+
 // Nalgebra conversions
 #[cfg(feature = "nalgebra")]
 mod nalgebra_conv {
@@ -435,17 +497,8 @@ mod nalgebra_conv {
     impl From<nalgebra::Isometry3<f64>> for DPose3 {
         fn from(iso: nalgebra::Isometry3<f64>) -> Self {
             Self {
-                rotation: glam::DQuat::from_xyzw(
-                    iso.rotation.i,
-                    iso.rotation.j,
-                    iso.rotation.k,
-                    iso.rotation.w,
-                ),
-                translation: glam::DVec3::new(
-                    iso.translation.x,
-                    iso.translation.y,
-                    iso.translation.z,
-                ),
+                rotation: iso.rotation.into(),
+                translation: iso.translation.into(),
             }
         }
     }

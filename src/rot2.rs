@@ -365,6 +365,27 @@ macro_rules! impl_rot2 {
 impl_rot2!(Rot2, f32, glam::Vec2, glam::Mat2);
 impl_rot2!(DRot2, f64, glam::DVec2, glam::DMat2);
 
+// f32 <-> f64 conversions
+impl From<Rot2> for DRot2 {
+    #[inline]
+    fn from(r: Rot2) -> Self {
+        Self {
+            re: r.re as f64,
+            im: r.im as f64,
+        }
+    }
+}
+
+impl From<DRot2> for Rot2 {
+    #[inline]
+    fn from(r: DRot2) -> Self {
+        Self {
+            re: r.re as f32,
+            im: r.im as f32,
+        }
+    }
+}
+
 // Nalgebra conversions
 #[cfg(feature = "nalgebra")]
 mod nalgebra_conv {

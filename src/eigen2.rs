@@ -77,6 +77,27 @@ macro_rules! impl_symmetric_eigen2 {
 impl_symmetric_eigen2!(SymmetricEigen2, glam::Mat2, glam::Vec2, f32);
 impl_symmetric_eigen2!(DSymmetricEigen2, glam::DMat2, glam::DVec2, f64);
 
+// f32 <-> f64 conversions
+impl From<SymmetricEigen2> for DSymmetricEigen2 {
+    #[inline]
+    fn from(e: SymmetricEigen2) -> Self {
+        Self {
+            eigenvalues: e.eigenvalues.as_dvec2(),
+            eigenvectors: e.eigenvectors.as_dmat2(),
+        }
+    }
+}
+
+impl From<DSymmetricEigen2> for SymmetricEigen2 {
+    #[inline]
+    fn from(e: DSymmetricEigen2) -> Self {
+        Self {
+            eigenvalues: e.eigenvalues.as_vec2(),
+            eigenvectors: e.eigenvectors.as_mat2(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

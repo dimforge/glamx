@@ -90,6 +90,29 @@ macro_rules! impl_svd2 {
 impl_svd2!(Svd2, glam::Mat2, glam::Vec2, f32);
 impl_svd2!(DSvd2, glam::DMat2, glam::DVec2, f64);
 
+// f32 <-> f64 conversions
+impl From<Svd2> for DSvd2 {
+    #[inline]
+    fn from(svd: Svd2) -> Self {
+        Self {
+            u: svd.u.as_dmat2(),
+            s: svd.s.as_dvec2(),
+            vt: svd.vt.as_dmat2(),
+        }
+    }
+}
+
+impl From<DSvd2> for Svd2 {
+    #[inline]
+    fn from(svd: DSvd2) -> Self {
+        Self {
+            u: svd.u.as_mat2(),
+            s: svd.s.as_vec2(),
+            vt: svd.vt.as_mat2(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
