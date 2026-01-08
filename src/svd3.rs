@@ -132,6 +132,74 @@ impl_svd3!(Svd3, glam::Mat3, glam::Vec3, SymmetricEigen3, f32);
 impl_svd3!(Svd3A, glam::Mat3A, glam::Vec3A, SymmetricEigen3A, f32);
 impl_svd3!(DSvd3, glam::DMat3, glam::DVec3, DSymmetricEigen3, f64);
 
+// f32 <-> f64 conversions
+impl From<Svd3> for DSvd3 {
+    #[inline]
+    fn from(svd: Svd3) -> Self {
+        Self {
+            u: svd.u.as_dmat3(),
+            s: svd.s.as_dvec3(),
+            vt: svd.vt.as_dmat3(),
+        }
+    }
+}
+
+impl From<DSvd3> for Svd3 {
+    #[inline]
+    fn from(svd: DSvd3) -> Self {
+        Self {
+            u: svd.u.as_mat3(),
+            s: svd.s.as_vec3(),
+            vt: svd.vt.as_mat3(),
+        }
+    }
+}
+
+impl From<Svd3A> for DSvd3 {
+    #[inline]
+    fn from(svd: Svd3A) -> Self {
+        Self {
+            u: svd.u.as_dmat3(),
+            s: svd.s.as_dvec3(),
+            vt: svd.vt.as_dmat3(),
+        }
+    }
+}
+
+impl From<DSvd3> for Svd3A {
+    #[inline]
+    fn from(svd: DSvd3) -> Self {
+        Self {
+            u: svd.u.as_mat3().into(),
+            s: svd.s.as_vec3a(),
+            vt: svd.vt.as_mat3().into(),
+        }
+    }
+}
+
+// Svd3 <-> Svd3A conversions
+impl From<Svd3> for Svd3A {
+    #[inline]
+    fn from(svd: Svd3) -> Self {
+        Self {
+            u: glam::Mat3A::from(svd.u),
+            s: svd.s.into(),
+            vt: glam::Mat3A::from(svd.vt),
+        }
+    }
+}
+
+impl From<Svd3A> for Svd3 {
+    #[inline]
+    fn from(svd: Svd3A) -> Self {
+        Self {
+            u: glam::Mat3::from(svd.u),
+            s: svd.s.into(),
+            vt: glam::Mat3::from(svd.vt),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

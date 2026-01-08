@@ -230,6 +230,68 @@ impl_symmetric_eigen3!(SymmetricEigen3, glam::Mat3, glam::Vec3, f32);
 impl_symmetric_eigen3!(SymmetricEigen3A, glam::Mat3A, glam::Vec3A, f32);
 impl_symmetric_eigen3!(DSymmetricEigen3, glam::DMat3, glam::DVec3, f64);
 
+// f32 <-> f64 conversions
+impl From<SymmetricEigen3> for DSymmetricEigen3 {
+    #[inline]
+    fn from(e: SymmetricEigen3) -> Self {
+        Self {
+            eigenvalues: e.eigenvalues.as_dvec3(),
+            eigenvectors: e.eigenvectors.as_dmat3(),
+        }
+    }
+}
+
+impl From<DSymmetricEigen3> for SymmetricEigen3 {
+    #[inline]
+    fn from(e: DSymmetricEigen3) -> Self {
+        Self {
+            eigenvalues: e.eigenvalues.as_vec3(),
+            eigenvectors: e.eigenvectors.as_mat3(),
+        }
+    }
+}
+
+impl From<SymmetricEigen3A> for DSymmetricEigen3 {
+    #[inline]
+    fn from(e: SymmetricEigen3A) -> Self {
+        Self {
+            eigenvalues: e.eigenvalues.as_dvec3(),
+            eigenvectors: e.eigenvectors.as_dmat3(),
+        }
+    }
+}
+
+impl From<DSymmetricEigen3> for SymmetricEigen3A {
+    #[inline]
+    fn from(e: DSymmetricEigen3) -> Self {
+        Self {
+            eigenvalues: e.eigenvalues.as_vec3a(),
+            eigenvectors: e.eigenvectors.as_mat3().into(),
+        }
+    }
+}
+
+// SymmetricEigen3 <-> SymmetricEigen3A conversions
+impl From<SymmetricEigen3> for SymmetricEigen3A {
+    #[inline]
+    fn from(e: SymmetricEigen3) -> Self {
+        Self {
+            eigenvalues: e.eigenvalues.into(),
+            eigenvectors: glam::Mat3A::from(e.eigenvectors),
+        }
+    }
+}
+
+impl From<SymmetricEigen3A> for SymmetricEigen3 {
+    #[inline]
+    fn from(e: SymmetricEigen3A) -> Self {
+        Self {
+            eigenvalues: e.eigenvalues.into(),
+            eigenvectors: glam::Mat3::from(e.eigenvectors),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

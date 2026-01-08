@@ -364,6 +364,27 @@ impl_pose2!(
     glam::DMat3
 );
 
+// f32 <-> f64 conversions
+impl From<Pose2> for DPose2 {
+    #[inline]
+    fn from(p: Pose2) -> Self {
+        Self {
+            rotation: p.rotation.into(),
+            translation: p.translation.into(),
+        }
+    }
+}
+
+impl From<DPose2> for Pose2 {
+    #[inline]
+    fn from(p: DPose2) -> Self {
+        Self {
+            rotation: p.rotation.into(),
+            translation: p.translation.as_vec2(),
+        }
+    }
+}
+
 // Nalgebra conversions
 #[cfg(feature = "nalgebra")]
 mod nalgebra_conv {
