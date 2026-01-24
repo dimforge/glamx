@@ -312,6 +312,23 @@ macro_rules! impl_pose2 {
             }
         }
 
+        impl From<($Vec2, $Real)> for $Pose2 {
+            #[inline]
+            fn from((translation, rotation): ($Vec2, $Real)) -> Self {
+                Self {
+                    translation,
+                    rotation: $Rot2::new(rotation),
+                }
+            }
+        }
+
+        impl From<$Pose2> for ($Vec2, $Real) {
+            #[inline]
+            fn from(pose: $Pose2) -> ($Vec2, $Real) {
+                (pose.translation, pose.rotation.angle())
+            }
+        }
+
         #[cfg(feature = "approx")]
         impl approx::AbsDiffEq for $Pose2 {
             type Epsilon = $Real;
@@ -508,5 +525,15 @@ mod tests {
         let p = DPose2::new(glam::DVec2::new(1.0, 2.0), core::f64::consts::PI / 4.0);
         assert_relative_eq!(p.translation.x, 1.0, epsilon = 1e-10);
         assert_relative_eq!(p.translation.y, 2.0, epsilon = 1e-10);
+    }
+
+    #[test]
+    fn test_convert_back_to_equal_pose2() {
+        let (t1, r1) = (glam::Vec2::new(1.0, 2.0), PI / 4.0);
+        let p: Pose2 = (t1, r1).into();
+        let (t2, r2) = p.into();
+
+        assert_relative_eq!(t1, t2, epsilon = 1e-6);
+        assert_relative_eq!(r1, r2, epsilon = 1e-6);
     }
 }
