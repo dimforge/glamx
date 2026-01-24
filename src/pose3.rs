@@ -354,6 +354,23 @@ macro_rules! impl_pose3 {
             }
         }
 
+        impl From<($Vec3, $Rot3)> for $Pose3 {
+            #[inline]
+            fn from((translation, rotation): ($Vec3, $Rot3)) -> Self {
+                Self {
+                    translation,
+                    rotation,
+                }
+            }
+        }
+
+        impl From<$Pose3> for ($Vec3, $Rot3) {
+            #[inline]
+            fn from(pose: $Pose3) -> ($Vec3, $Rot3) {
+                (pose.translation, pose.rotation)
+            }
+        }
+
         #[cfg(feature = "approx")]
         impl approx::AbsDiffEq for $Pose3 {
             type Epsilon = $Real;
@@ -597,5 +614,18 @@ mod tests {
         assert_relative_eq!(p.translation.x, 1.0, epsilon = 1e-10);
         assert_relative_eq!(p.translation.y, 2.0, epsilon = 1e-10);
         assert_relative_eq!(p.translation.z, 3.0, epsilon = 1e-10);
+    }
+
+    #[test]
+    fn test_convert_back_to_equal_pose3() {
+        let (t1, r1) = (
+            glam::Vec3::new(1.0, 2.0, 3.0),
+            glam::Quat::from_rotation_x(PI / 4.0),
+        );
+        let p: Pose3 = (t1, r1).into();
+        let (t2, r2) = p.into();
+
+        assert_relative_eq!(t1, t2, epsilon = 1e-6);
+        assert!(r1.dot(r2).abs() > 1.0 - 1e-5);
     }
 }
