@@ -10,6 +10,7 @@ macro_rules! impl_pose2 {
         #[derive(Copy, Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
         #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize))]
+        #[repr(C)]
         $(#[$attr])*
         pub struct $Pose2 {
             /// The rotational part of the pose.
@@ -352,7 +353,8 @@ impl_pose2!(
     glam::Vec2,
     glam::Vec3,
     glam::Mat2,
-    glam::Mat3
+    glam::Mat3,
+    #[cfg_attr(feature = "bytemuck", derive(bytemuck::Pod, bytemuck::Zeroable))]
 );
 impl_pose2!(
     DPose2,

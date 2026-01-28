@@ -63,7 +63,10 @@ macro_rules! impl_symmetric_eigen3 {
                 if p1 == 0.0 {
                     // The matrix is diagonal.
                     let mut eigenvalues = [mat.x_axis.x, mat.y_axis.y, mat.z_axis.z];
-                    eigenvalues.sort_by(|a, b| a.partial_cmp(b).unwrap_or(core::cmp::Ordering::Equal));
+                    // Simple 3-element sorting network (no alloc needed)
+                    if eigenvalues[0] > eigenvalues[1] { eigenvalues.swap(0, 1); }
+                    if eigenvalues[1] > eigenvalues[2] { eigenvalues.swap(1, 2); }
+                    if eigenvalues[0] > eigenvalues[1] { eigenvalues.swap(0, 1); }
                     <$Vec3>::from_array(eigenvalues)
                 } else {
                     let q = (mat.x_axis.x + mat.y_axis.y + mat.z_axis.z) / 3.0;

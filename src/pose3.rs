@@ -5,17 +5,19 @@ use core::ops::{Mul, MulAssign};
 
 /// Macro to generate a 3D pose type for a specific scalar type.
 macro_rules! impl_pose3 {
-    ($Pose3:ident, $Rot3:ident, $Real:ty, $Vec3:ty, $Mat4: ty $(, #[$attr:meta])*) => {
+    ($Pose3:ident, $Rot3:ident, $Real:ty, $Vec3:ty, $Mat4: ty $(, $Padding: ty, $bytemuck: ident)?) => {
         #[doc = concat!("A 3D pose (rotation + translation), representing a rigid body transformation (", stringify!($Real), " precision).")]
         #[derive(Copy, Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
         #[cfg_attr(feature = "rkyv", derive(rkyv::Archive, rkyv::Serialize, rkyv::Deserialize))]
-        $(#[$attr])*
+        $(#[cfg_attr(feature = "bytemuck", derive($bytemuck::Pod, $bytemuck::Zeroable))])*
+        #[repr(C)]
         pub struct $Pose3 {
             /// The rotational part of the pose.
             pub rotation: $Rot3,
             /// The translational part of the pose.
             pub translation: $Vec3,
+            $(pub padding: $Padding,)*
         }
 
         impl $Pose3 {
@@ -23,6 +25,7 @@ macro_rules! impl_pose3 {
             pub const IDENTITY: Self = Self {
                 rotation: $Rot3::IDENTITY,
                 translation: <$Vec3>::ZERO,
+                $(padding: 0 as $Padding,)*
             };
 
             /// Creates the identity pose.
@@ -37,6 +40,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation: $Rot3::IDENTITY,
                     translation,
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -52,6 +56,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation,
                     translation: <$Vec3>::ZERO,
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -61,6 +66,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation,
                     translation,
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -71,6 +77,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation,
                     translation,
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -80,6 +87,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation: $Rot3::from_scaled_axis(axisangle.into()),
                     translation: <$Vec3>::ZERO,
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -89,6 +97,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation: self.rotation,
                     translation: self.translation + self.rotation * translation,
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -98,6 +107,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation: self.rotation,
                     translation: self.translation + translation,
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -108,6 +118,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation: inv_rot,
                     translation: inv_rot * (-self.translation),
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -119,6 +130,7 @@ macro_rules! impl_pose3 {
                 $Pose3 {
                     translation: inv_rot1 * tr_12,
                     rotation: inv_rot1 * rhs.rotation,
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -158,6 +170,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation: self.rotation.slerp(other.rotation, t),
                     translation: self.translation.lerp(other.translation, t),
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -189,6 +202,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation,
                     translation: translation.into(),
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -210,6 +224,7 @@ macro_rules! impl_pose3 {
                 $Pose3 {
                     rotation,
                     translation,
+                    $(padding: 0 as $Padding,)*
                 }
             }
 
@@ -228,6 +243,7 @@ macro_rules! impl_pose3 {
                 $Pose3 {
                     rotation: <$Rot3>::look_at_lh(eye.into(), target.into(), up.into()).inverse(),
                     translation: eye,
+                    $(padding: 0 as $Padding,)*
                 }
             }
         }
@@ -241,6 +257,7 @@ macro_rules! impl_pose3 {
                 Self {
                     rotation: self.rotation * rhs.rotation,
                     translation: self.translation + self.rotation * rhs.translation,
+                    $(padding: 0 as $Padding,)*
                 }
             }
         }
@@ -324,6 +341,7 @@ macro_rules! impl_pose3 {
                 $Pose3 {
                     translation: self * rhs.translation,
                     rotation: self * rhs.rotation,
+                    $(padding: 0 as $Padding,)*
                 }
             }
         }
@@ -336,6 +354,7 @@ macro_rules! impl_pose3 {
                 $Pose3 {
                     translation: self.translation,
                     rotation: self.rotation * rhs,
+                    $(padding: 0 as $Padding,)*
                 }
             }
         }
@@ -387,7 +406,7 @@ macro_rules! impl_pose3 {
     };
 }
 
-impl_pose3!(Pose3, Rot3, f32, glam::Vec3, glam::Mat4);
+impl_pose3!(Pose3, Rot3, f32, glam::Vec3, glam::Mat4, u32, bytemuck);
 impl_pose3!(Pose3A, Rot3, f32, glam::Vec3A, glam::Mat4);
 impl_pose3!(DPose3, DRot3, f64, glam::DVec3, glam::DMat4);
 
@@ -408,6 +427,7 @@ impl From<DPose3> for Pose3 {
         Self {
             rotation: p.rotation.as_quat(),
             translation: p.translation.as_vec3(),
+            padding: 0
         }
     }
 }
@@ -449,6 +469,7 @@ impl From<Pose3A> for Pose3 {
         Self {
             rotation: p.rotation,
             translation: p.translation.into(),
+            padding: 0
         }
     }
 }
@@ -481,6 +502,7 @@ mod nalgebra_conv {
                     iso.translation.y,
                     iso.translation.z,
                 ),
+                padding: 0
             }
         }
     }
