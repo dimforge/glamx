@@ -36,8 +36,6 @@
 #[cfg(feature = "std")]
 extern crate std;
 
-extern crate alloc;
-
 // Re-export approx for convenience
 #[cfg(feature = "approx")]
 pub use approx;
