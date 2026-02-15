@@ -427,7 +427,7 @@ impl From<DPose3> for Pose3 {
         Self {
             rotation: p.rotation.as_quat(),
             translation: p.translation.as_vec3(),
-            padding: 0
+            padding: 0,
         }
     }
 }
@@ -469,7 +469,7 @@ impl From<Pose3A> for Pose3 {
         Self {
             rotation: p.rotation,
             translation: p.translation.into(),
-            padding: 0
+            padding: 0,
         }
     }
 }
@@ -502,7 +502,7 @@ mod nalgebra_conv {
                     iso.translation.y,
                     iso.translation.z,
                 ),
-                padding: 0
+                padding: 0,
             }
         }
     }
