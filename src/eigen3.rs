@@ -77,8 +77,15 @@ macro_rules! impl_symmetric_eigen3 {
                         + (mat.z_axis.z - q).powi(2)
                         + 2.0 * p1;
                     let p = (p2 / 6.0).sqrt();
-                    let mat_b = 1.0 / p * (mat - q * <$Mat3>::IDENTITY);
-                    let r = mat_b.determinant() / 2.0;
+                    let mat_b = mat - q * <$Mat3>::IDENTITY;
+
+                    // NOTE: `p` shouldn’t be zero, but in some platforms (nvidia gpus apparently),
+                    //       denormals can be flushed resulting in a zero.
+                    let r = if p != 0.0 {
+                        mat_b.determinant() / (2.0 * p)
+                    } else {
+                        <$Real>::MAX
+                    };
 
                     // r should be in the [-1, 1] range for a symmetric matrix,
                     // but computation error can leave it slightly outside this range.
