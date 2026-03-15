@@ -17,7 +17,12 @@ macro_rules! impl_pose3 {
             pub rotation: $Rot3,
             /// The translational part of the pose.
             pub translation: $Vec3,
-            $(pub padding: $Padding,)*
+            $(
+            /// Explicit padding for compatibility with bytemuck and targets like spirv.
+            ///
+            /// Can have any value as it is never read from or written to.
+            pub padding: $Padding,
+            )*
         }
 
         impl $Pose3 {
