@@ -1,4 +1,4 @@
-# Unreleased
+# v0.2.0
 
 - Add `padding` field to `Pose3` for better compatibility with `bytemuck` and `spirv`.
 - Fix various internal implementation details that are incompatible with `spirv`/`naga`.
