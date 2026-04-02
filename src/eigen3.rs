@@ -6,6 +6,8 @@
 //!
 //! Adapted from <https://github.com/Jondolf/barry/tree/main/src/math/eigen>
 
+#![allow(clippy::manual_swap)] // Needed for spirv compatibility.
+
 use glam::Vec3Swizzles;
 use num_traits::float::FloatConst;
 
