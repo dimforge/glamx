@@ -1,9 +1,17 @@
 //! Matrix extension traits for glam types.
 
-use crate::eigen2::{DSymmetricEigen2, SymmetricEigen2};
-use crate::eigen3::{DSymmetricEigen3, SymmetricEigen3, SymmetricEigen3A};
-use crate::svd2::{DSvd2, Svd2};
-use crate::svd3::{DSvd3, Svd3, Svd3A};
+#[cfg(feature = "f64")]
+use crate::eigen2::DSymmetricEigen2;
+use crate::eigen2::SymmetricEigen2;
+#[cfg(feature = "f64")]
+use crate::eigen3::DSymmetricEigen3;
+use crate::eigen3::{SymmetricEigen3, SymmetricEigen3A};
+#[cfg(feature = "f64")]
+use crate::svd2::DSvd2;
+use crate::svd2::Svd2;
+#[cfg(feature = "f64")]
+use crate::svd3::DSvd3;
+use crate::svd3::{Svd3, Svd3A};
 
 /// Extension trait for square matrix types.
 ///
@@ -168,9 +176,11 @@ macro_rules! impl_mat3_ext {
 }
 
 impl_mat2_ext!(glam::Mat2, glam::Vec2, f32, SymmetricEigen2, Svd2);
+#[cfg(feature = "f64")]
 impl_mat2_ext!(glam::DMat2, glam::DVec2, f64, DSymmetricEigen2, DSvd2);
 impl_mat3_ext!(glam::Mat3, glam::Vec3, f32, SymmetricEigen3, Svd3);
 impl_mat3_ext!(glam::Mat3A, glam::Vec3A, f32, SymmetricEigen3A, Svd3A);
+#[cfg(feature = "f64")]
 impl_mat3_ext!(glam::DMat3, glam::DVec3, f64, DSymmetricEigen3, DSvd3);
 
 #[cfg(test)]
@@ -222,6 +232,7 @@ mod tests {
         assert_eq!(m.z_axis, glam::Vec3::new(1.0, 2.0, 3.0));
     }
 
+    #[cfg(feature = "f64")]
     #[test]
     fn test_dmat2_abs() {
         let m = glam::DMat2::from_cols(glam::DVec2::new(-1.0, 2.0), glam::DVec2::new(3.0, -4.0));

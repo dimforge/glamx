@@ -363,9 +363,11 @@ macro_rules! impl_rot2 {
 }
 
 impl_rot2!(Rot2, f32, glam::Vec2, glam::Mat2);
+#[cfg(feature = "f64")]
 impl_rot2!(DRot2, f64, glam::DVec2, glam::DMat2);
 
 // f32 <-> f64 conversions
+#[cfg(feature = "f64")]
 impl From<Rot2> for DRot2 {
     #[inline]
     fn from(r: Rot2) -> Self {
@@ -376,6 +378,7 @@ impl From<Rot2> for DRot2 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<DRot2> for Rot2 {
     #[inline]
     fn from(r: DRot2) -> Self {
@@ -403,12 +406,14 @@ mod nalgebra_conv {
         }
     }
 
+    #[cfg(feature = "f64")]
     impl From<DRot2> for nalgebra::UnitComplex<f64> {
         fn from(r: DRot2) -> Self {
             nalgebra::UnitComplex::from_cos_sin_unchecked(r.re, r.im)
         }
     }
 
+    #[cfg(feature = "f64")]
     impl From<nalgebra::UnitComplex<f64>> for DRot2 {
         fn from(r: nalgebra::UnitComplex<f64>) -> Self {
             Self { re: r.re, im: r.im }
@@ -499,6 +504,7 @@ mod tests {
         assert_relative_eq!(r1.angle_between(&r2), PI / 2.0, epsilon = 1e-6);
     }
 
+    #[cfg(feature = "f64")]
     #[test]
     fn test_drot2_new() {
         let r = DRot2::new(core::f64::consts::PI / 2.0);

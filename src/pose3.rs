@@ -1,6 +1,8 @@
 //! 3D pose types for rigid body transformations.
 
-use crate::rot3::{DRot3, Rot3};
+#[cfg(feature = "f64")]
+use crate::rot3::DRot3;
+use crate::rot3::Rot3;
 use core::ops::{Mul, MulAssign};
 
 /// Macro to generate a 3D pose type for a specific scalar type.
@@ -413,9 +415,11 @@ macro_rules! impl_pose3 {
 
 impl_pose3!(Pose3, Rot3, f32, glam::Vec3, glam::Mat4, u32, bytemuck);
 impl_pose3!(Pose3A, Rot3, f32, glam::Vec3A, glam::Mat4);
+#[cfg(feature = "f64")]
 impl_pose3!(DPose3, DRot3, f64, glam::DVec3, glam::DMat4);
 
 // f32 <-> f64 conversions
+#[cfg(feature = "f64")]
 impl From<Pose3> for DPose3 {
     #[inline]
     fn from(p: Pose3) -> Self {
@@ -426,6 +430,7 @@ impl From<Pose3> for DPose3 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<DPose3> for Pose3 {
     #[inline]
     fn from(p: DPose3) -> Self {
@@ -437,6 +442,7 @@ impl From<DPose3> for Pose3 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<Pose3A> for DPose3 {
     #[inline]
     fn from(p: Pose3A) -> Self {
@@ -447,6 +453,7 @@ impl From<Pose3A> for DPose3 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<DPose3> for Pose3A {
     #[inline]
     fn from(p: DPose3) -> Self {
@@ -512,6 +519,7 @@ mod nalgebra_conv {
         }
     }
 
+    #[cfg(feature = "f64")]
     impl From<DPose3> for nalgebra::Isometry3<f64> {
         fn from(p: DPose3) -> Self {
             nalgebra::Isometry3 {
@@ -521,6 +529,7 @@ mod nalgebra_conv {
         }
     }
 
+    #[cfg(feature = "f64")]
     impl From<nalgebra::Isometry3<f64>> for DPose3 {
         fn from(iso: nalgebra::Isometry3<f64>) -> Self {
             Self {
@@ -617,6 +626,7 @@ mod tests {
         assert_relative_eq!(p.translation.z, p2.translation.z, epsilon = 1e-6);
     }
 
+    #[cfg(feature = "f64")]
     #[test]
     fn test_dpose3_new() {
         let axisangle = glam::DVec3::new(0.1, 0.2, 0.3);

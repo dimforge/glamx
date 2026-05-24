@@ -243,9 +243,11 @@ macro_rules! impl_symmetric_eigen3 {
 
 impl_symmetric_eigen3!(SymmetricEigen3, glam::Mat3, glam::Vec3, f32);
 impl_symmetric_eigen3!(SymmetricEigen3A, glam::Mat3A, glam::Vec3A, f32);
+#[cfg(feature = "f64")]
 impl_symmetric_eigen3!(DSymmetricEigen3, glam::DMat3, glam::DVec3, f64);
 
 // f32 <-> f64 conversions
+#[cfg(feature = "f64")]
 impl From<SymmetricEigen3> for DSymmetricEigen3 {
     #[inline]
     fn from(e: SymmetricEigen3) -> Self {
@@ -256,6 +258,7 @@ impl From<SymmetricEigen3> for DSymmetricEigen3 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<DSymmetricEigen3> for SymmetricEigen3 {
     #[inline]
     fn from(e: DSymmetricEigen3) -> Self {
@@ -266,6 +269,7 @@ impl From<DSymmetricEigen3> for SymmetricEigen3 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<SymmetricEigen3A> for DSymmetricEigen3 {
     #[inline]
     fn from(e: SymmetricEigen3A) -> Self {
@@ -276,6 +280,7 @@ impl From<SymmetricEigen3A> for DSymmetricEigen3 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<DSymmetricEigen3> for SymmetricEigen3A {
     #[inline]
     fn from(e: DSymmetricEigen3) -> Self {
@@ -355,6 +360,7 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "f64")]
     #[test]
     fn eigen_3x3_f64() {
         let mat =

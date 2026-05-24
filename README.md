@@ -25,6 +25,7 @@ This crate re-exports all of glam's types, so you can use it as a drop-in replac
 | Feature         | Description                            |
 |-----------------|----------------------------------------|
 | `std` (default) | Enables standard library support       |
+| `f64` (default via `all-types`) | Enables `f64` glam types and the corresponding glamx `D*` types (`DRot2`, `DPose2`, `DSymmetricEigen2`, ...) |
 | `serde`         | Enables serialization via serde        |
 | `bytemuck`      | Enables bytemuck derives for `Rot2`/`DRot2` |
 | `nalgebra`      | Enables conversions to/from nalgebra types |
@@ -33,6 +34,8 @@ This crate re-exports all of glam's types, so you can use it as a drop-in replac
 | `rand`          | Enables random generation support      |
 | `mint`          | Enables mint type conversions          |
 | `encase`        | Enables encase encoding                |
+
+All of glam's other type-gating features (`all-types`, `float-types`, `integer-types`, `size-types`, `i8`/`u8`/`i16`/`u16`/`i32`/`u32`/`i64`/`u64`/`isize`/`usize`) are also exposed as passthroughs to glam.
 
 ## `no_std` Support
 

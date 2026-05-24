@@ -88,9 +88,11 @@ macro_rules! impl_svd2 {
 }
 
 impl_svd2!(Svd2, glam::Mat2, glam::Vec2, f32);
+#[cfg(feature = "f64")]
 impl_svd2!(DSvd2, glam::DMat2, glam::DVec2, f64);
 
 // f32 <-> f64 conversions
+#[cfg(feature = "f64")]
 impl From<Svd2> for DSvd2 {
     #[inline]
     fn from(svd: Svd2) -> Self {
@@ -102,6 +104,7 @@ impl From<Svd2> for DSvd2 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<DSvd2> for Svd2 {
     #[inline]
     fn from(svd: DSvd2) -> Self {
@@ -172,6 +175,7 @@ mod tests {
         assert_relative_eq!(svd.recompose(), mat, epsilon = 1e-6);
     }
 
+    #[cfg(feature = "f64")]
     #[test]
     fn svd_2x2_f64() {
         let mat = glam::DMat2::from_cols_array_2d(&[[4.0, 3.0], [2.0, 1.0]]);
