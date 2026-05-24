@@ -98,7 +98,7 @@ num-traits = { version = "0.2", default-features = false, features = ["libm"] }
 approx = { version = "0.5", default-features = false, optional = true }
 serde = { version = "1.0", optional = true, features = ["derive"] }
 bytemuck = { version = "1", features = ["derive"], optional = true }
-nalgebra = { version = "0.34", default-features = false, features = ["convert-glam032"], optional = true }
+nalgebra = { version = "0.35", default-features = false, features = ["convert-glam033"], optional = true }
 rkyv = { version = "0.8", optional = true, default-features = false }
 
 [dev-dependencies]
