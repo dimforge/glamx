@@ -1,8 +1,8 @@
 //! 3D pose types for rigid body transformations.
 
-use crate::rot3::Rot3;
 #[cfg(feature = "f64")]
 use crate::rot3::DRot3;
+use crate::rot3::Rot3;
 use core::ops::{Mul, MulAssign};
 
 /// Macro to generate a 3D pose type for a specific scalar type.

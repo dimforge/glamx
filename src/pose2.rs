@@ -1,8 +1,8 @@
 //! 2D pose types for rigid body transformations.
 
-use crate::rot2::Rot2;
 #[cfg(feature = "f64")]
 use crate::rot2::DRot2;
+use crate::rot2::Rot2;
 use core::ops::{Mul, MulAssign};
 
 /// Macro to generate a 2D pose type for a specific scalar type.

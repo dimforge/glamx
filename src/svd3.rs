@@ -6,9 +6,9 @@
 #[cfg(not(feature = "std"))]
 use simba::scalar::ComplexField;
 
-use crate::eigen3::SymmetricEigen3;
 #[cfg(feature = "f64")]
 use crate::eigen3::DSymmetricEigen3;
+use crate::eigen3::SymmetricEigen3;
 use crate::SymmetricEigen3A;
 
 /// Macro to generate Svd3 for a specific scalar type.

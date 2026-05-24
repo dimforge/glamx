@@ -66,60 +66,60 @@ mod rot3;
 mod svd2;
 mod svd3;
 
-pub use eigen2::SymmetricEigen2;
 #[cfg(feature = "f64")]
 pub use eigen2::DSymmetricEigen2;
-pub use eigen3::{SymmetricEigen3, SymmetricEigen3A};
+pub use eigen2::SymmetricEigen2;
 #[cfg(feature = "f64")]
 pub use eigen3::DSymmetricEigen3;
+pub use eigen3::{SymmetricEigen3, SymmetricEigen3A};
 pub use glam::*;
 pub use matrix_ext::MatExt;
-pub use pose2::Pose2;
 #[cfg(feature = "f64")]
 pub use pose2::DPose2;
-pub use pose3::{Pose3, Pose3A};
+pub use pose2::Pose2;
 #[cfg(feature = "f64")]
 pub use pose3::DPose3;
-pub use rot2::Rot2;
+pub use pose3::{Pose3, Pose3A};
 #[cfg(feature = "f64")]
 pub use rot2::DRot2;
-pub use rot3::Rot3;
+pub use rot2::Rot2;
 #[cfg(feature = "f64")]
 pub use rot3::DRot3;
-pub use svd2::Svd2;
+pub use rot3::Rot3;
 #[cfg(feature = "f64")]
 pub use svd2::DSvd2;
-pub use svd3::{Svd3, Svd3A};
+pub use svd2::Svd2;
 #[cfg(feature = "f64")]
 pub use svd3::DSvd3;
+pub use svd3::{Svd3, Svd3A};
 
 /// Prelude module for convenient imports.
 ///
 /// This module re-exports all public types and traits.
 pub mod prelude {
-    pub use crate::eigen2::SymmetricEigen2;
     #[cfg(feature = "f64")]
     pub use crate::eigen2::DSymmetricEigen2;
-    pub use crate::eigen3::{SymmetricEigen3, SymmetricEigen3A};
+    pub use crate::eigen2::SymmetricEigen2;
     #[cfg(feature = "f64")]
     pub use crate::eigen3::DSymmetricEigen3;
+    pub use crate::eigen3::{SymmetricEigen3, SymmetricEigen3A};
     pub use crate::matrix_ext::MatExt;
-    pub use crate::pose2::Pose2;
     #[cfg(feature = "f64")]
     pub use crate::pose2::DPose2;
-    pub use crate::pose3::Pose3;
+    pub use crate::pose2::Pose2;
     #[cfg(feature = "f64")]
     pub use crate::pose3::DPose3;
-    pub use crate::rot2::Rot2;
+    pub use crate::pose3::Pose3;
     #[cfg(feature = "f64")]
     pub use crate::rot2::DRot2;
-    pub use crate::rot3::Rot3;
+    pub use crate::rot2::Rot2;
     #[cfg(feature = "f64")]
     pub use crate::rot3::DRot3;
-    pub use crate::svd2::Svd2;
+    pub use crate::rot3::Rot3;
     #[cfg(feature = "f64")]
     pub use crate::svd2::DSvd2;
-    pub use crate::svd3::{Svd3, Svd3A};
+    pub use crate::svd2::Svd2;
     #[cfg(feature = "f64")]
     pub use crate::svd3::DSvd3;
+    pub use crate::svd3::{Svd3, Svd3A};
 }

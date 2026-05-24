@@ -1,17 +1,17 @@
 //! Matrix extension traits for glam types.
 
-use crate::eigen2::SymmetricEigen2;
 #[cfg(feature = "f64")]
 use crate::eigen2::DSymmetricEigen2;
-use crate::eigen3::{SymmetricEigen3, SymmetricEigen3A};
+use crate::eigen2::SymmetricEigen2;
 #[cfg(feature = "f64")]
 use crate::eigen3::DSymmetricEigen3;
-use crate::svd2::Svd2;
+use crate::eigen3::{SymmetricEigen3, SymmetricEigen3A};
 #[cfg(feature = "f64")]
 use crate::svd2::DSvd2;
-use crate::svd3::{Svd3, Svd3A};
+use crate::svd2::Svd2;
 #[cfg(feature = "f64")]
 use crate::svd3::DSvd3;
+use crate::svd3::{Svd3, Svd3A};
 
 /// Extension trait for square matrix types.
 ///
