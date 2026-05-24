@@ -1,6 +1,8 @@
 //! 2D pose types for rigid body transformations.
 
-use crate::rot2::{DRot2, Rot2};
+use crate::rot2::Rot2;
+#[cfg(feature = "f64")]
+use crate::rot2::DRot2;
 use core::ops::{Mul, MulAssign};
 
 /// Macro to generate a 2D pose type for a specific scalar type.
@@ -356,6 +358,7 @@ impl_pose2!(
     glam::Mat3,
     #[cfg_attr(feature = "bytemuck", derive(bytemuck::Pod, bytemuck::Zeroable))]
 );
+#[cfg(feature = "f64")]
 impl_pose2!(
     DPose2,
     DRot2,
@@ -367,6 +370,7 @@ impl_pose2!(
 );
 
 // f32 <-> f64 conversions
+#[cfg(feature = "f64")]
 impl From<Pose2> for DPose2 {
     #[inline]
     fn from(p: Pose2) -> Self {
@@ -377,6 +381,7 @@ impl From<Pose2> for DPose2 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<DPose2> for Pose2 {
     #[inline]
     fn from(p: DPose2) -> Self {
@@ -410,6 +415,7 @@ mod nalgebra_conv {
         }
     }
 
+    #[cfg(feature = "f64")]
     impl From<DPose2> for nalgebra::Isometry2<f64> {
         fn from(p: DPose2) -> Self {
             nalgebra::Isometry2 {
@@ -419,6 +425,7 @@ mod nalgebra_conv {
         }
     }
 
+    #[cfg(feature = "f64")]
     impl From<nalgebra::Isometry2<f64>> for DPose2 {
         fn from(iso: nalgebra::Isometry2<f64>) -> Self {
             Self {
@@ -505,6 +512,7 @@ mod tests {
         assert_relative_eq!(p.translation.y, p2.translation.y, epsilon = 1e-6);
     }
 
+    #[cfg(feature = "f64")]
     #[test]
     fn test_dpose2_new() {
         let p = DPose2::new(glam::DVec2::new(1.0, 2.0), core::f64::consts::PI / 4.0);

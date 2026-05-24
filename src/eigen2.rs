@@ -75,9 +75,11 @@ macro_rules! impl_symmetric_eigen2 {
 }
 
 impl_symmetric_eigen2!(SymmetricEigen2, glam::Mat2, glam::Vec2, f32);
+#[cfg(feature = "f64")]
 impl_symmetric_eigen2!(DSymmetricEigen2, glam::DMat2, glam::DVec2, f64);
 
 // f32 <-> f64 conversions
+#[cfg(feature = "f64")]
 impl From<SymmetricEigen2> for DSymmetricEigen2 {
     #[inline]
     fn from(e: SymmetricEigen2) -> Self {
@@ -88,6 +90,7 @@ impl From<SymmetricEigen2> for DSymmetricEigen2 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<DSymmetricEigen2> for SymmetricEigen2 {
     #[inline]
     fn from(e: DSymmetricEigen2) -> Self {
@@ -123,6 +126,7 @@ mod tests {
         );
     }
 
+    #[cfg(feature = "f64")]
     #[test]
     fn eigen_2x2_f64() {
         let mat = glam::DMat2::from_cols_array_2d(&[[6.0, 3.0], [3.0, 4.0]]);

@@ -14,7 +14,7 @@ license = "MIT OR Apache-2.0"
 edition = "2021"
 
 [features]
-default = ["std"]
+default = ["std", "all-types"]
 
 # Standard library support
 std = ["glam/std", "simba/std", "approx?/std"]
@@ -60,9 +60,40 @@ rand = ["glam/rand"]
 
 encase = ["glam/encase"]
 
+# Type-gating features (mirror glam 0.33). Enabling any of these transitively
+# enables the matching glam feature so the corresponding type aliases become
+# available. glamx only adds extensions for floating-point types, so the
+# integer-/size-type features are pure passthroughs.
+all-types = ["float-types", "integer-types", "size-types", "glam/all-types"]
+float-types = ["f64", "glam/float-types"]
+integer-types = [
+    "i8",
+    "u8",
+    "i16",
+    "u16",
+    "i32",
+    "u32",
+    "i64",
+    "u64",
+    "glam/integer-types",
+]
+size-types = ["isize", "usize", "glam/size-types"]
+
+f64 = ["glam/f64"]
+i8 = ["glam/i8"]
+u8 = ["glam/u8"]
+i16 = ["glam/i16"]
+u16 = ["glam/u16"]
+i32 = ["glam/i32"]
+u32 = ["glam/u32"]
+i64 = ["glam/i64"]
+u64 = ["glam/u64"]
+isize = ["glam/isize"]
+usize = ["glam/usize"]
+
 [dependencies]
-glam = { version = "0.32", default-features = false }
-simba = { version = "0.9", default-features = false }
+glam = { version = "0.33", default-features = false }
+simba = { version = "0.10", default-features = false }
 num-traits = { version = "0.2", default-features = false, features = ["libm"] }
 approx = { version = "0.5", default-features = false, optional = true }
 serde = { version = "1.0", optional = true, features = ["derive"] }
@@ -72,4 +103,4 @@ rkyv = { version = "0.8", optional = true, default-features = false }
 
 [dev-dependencies]
 approx = "0.5"
-glam = { version = "0.32", features = ["approx"] }
+glam = { version = "0.33", features = ["approx"] }

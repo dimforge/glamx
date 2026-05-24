@@ -6,7 +6,9 @@
 #[cfg(not(feature = "std"))]
 use simba::scalar::ComplexField;
 
-use crate::eigen3::{DSymmetricEigen3, SymmetricEigen3};
+use crate::eigen3::SymmetricEigen3;
+#[cfg(feature = "f64")]
+use crate::eigen3::DSymmetricEigen3;
 use crate::SymmetricEigen3A;
 
 /// Macro to generate Svd3 for a specific scalar type.
@@ -130,9 +132,11 @@ macro_rules! impl_svd3 {
 
 impl_svd3!(Svd3, glam::Mat3, glam::Vec3, SymmetricEigen3, f32);
 impl_svd3!(Svd3A, glam::Mat3A, glam::Vec3A, SymmetricEigen3A, f32);
+#[cfg(feature = "f64")]
 impl_svd3!(DSvd3, glam::DMat3, glam::DVec3, DSymmetricEigen3, f64);
 
 // f32 <-> f64 conversions
+#[cfg(feature = "f64")]
 impl From<Svd3> for DSvd3 {
     #[inline]
     fn from(svd: Svd3) -> Self {
@@ -144,6 +148,7 @@ impl From<Svd3> for DSvd3 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<DSvd3> for Svd3 {
     #[inline]
     fn from(svd: DSvd3) -> Self {
@@ -155,6 +160,7 @@ impl From<DSvd3> for Svd3 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<Svd3A> for DSvd3 {
     #[inline]
     fn from(svd: Svd3A) -> Self {
@@ -166,6 +172,7 @@ impl From<Svd3A> for DSvd3 {
     }
 }
 
+#[cfg(feature = "f64")]
 impl From<DSvd3> for Svd3A {
     #[inline]
     fn from(svd: DSvd3) -> Self {
@@ -263,6 +270,7 @@ mod tests {
         assert_relative_eq!(svd.recompose(), mat, epsilon = 1e-5);
     }
 
+    #[cfg(feature = "f64")]
     #[test]
     fn svd_3x3_f64() {
         let mat =

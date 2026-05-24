@@ -25,6 +25,20 @@
 //! - `nalgebra`: Enables conversions to/from nalgebra types
 //! - `libm`: Uses libm for no_std math operations
 //!
+//! ### Type-gating features (mirror glam 0.33)
+//!
+//! These transitively enable the matching feature on `glam`. They control which
+//! type aliases the underlying `glam` re-export exposes; glamx adds extension
+//! types only for the floating-point variants, so disabling `f64` also removes
+//! all `D*` types (DRot2, DPose2, DSymmetricEigen2, ...).
+//!
+//! - `all-types` (default): enables `float-types`, `integer-types`, `size-types`.
+//! - `float-types`: enables `f64`.
+//! - `integer-types`: enables `i8`, `u8`, `i16`, `u16`, `i32`, `u32`, `i64`, `u64`.
+//! - `size-types`: enables `isize`, `usize`.
+//! - Individual features: `f64`, `i8`, `u8`, `i16`, `u16`, `i32`, `u32`, `i64`,
+//!   `u64`, `isize`, `usize`.
+//!
 //! ## glam Re-exports
 //!
 //! This crate re-exports all of glam's types so you can use it as a drop-in replacement without
@@ -52,28 +66,60 @@ mod rot3;
 mod svd2;
 mod svd3;
 
-pub use eigen2::{DSymmetricEigen2, SymmetricEigen2};
-pub use eigen3::{DSymmetricEigen3, SymmetricEigen3, SymmetricEigen3A};
+pub use eigen2::SymmetricEigen2;
+#[cfg(feature = "f64")]
+pub use eigen2::DSymmetricEigen2;
+pub use eigen3::{SymmetricEigen3, SymmetricEigen3A};
+#[cfg(feature = "f64")]
+pub use eigen3::DSymmetricEigen3;
 pub use glam::*;
 pub use matrix_ext::MatExt;
-pub use pose2::{DPose2, Pose2};
-pub use pose3::{DPose3, Pose3, Pose3A};
-pub use rot2::{DRot2, Rot2};
-pub use rot3::{DRot3, Rot3};
-pub use svd2::{DSvd2, Svd2};
-pub use svd3::{DSvd3, Svd3, Svd3A};
+pub use pose2::Pose2;
+#[cfg(feature = "f64")]
+pub use pose2::DPose2;
+pub use pose3::{Pose3, Pose3A};
+#[cfg(feature = "f64")]
+pub use pose3::DPose3;
+pub use rot2::Rot2;
+#[cfg(feature = "f64")]
+pub use rot2::DRot2;
+pub use rot3::Rot3;
+#[cfg(feature = "f64")]
+pub use rot3::DRot3;
+pub use svd2::Svd2;
+#[cfg(feature = "f64")]
+pub use svd2::DSvd2;
+pub use svd3::{Svd3, Svd3A};
+#[cfg(feature = "f64")]
+pub use svd3::DSvd3;
 
 /// Prelude module for convenient imports.
 ///
 /// This module re-exports all public types and traits.
 pub mod prelude {
-    pub use crate::eigen2::{DSymmetricEigen2, SymmetricEigen2};
-    pub use crate::eigen3::{DSymmetricEigen3, SymmetricEigen3, SymmetricEigen3A};
+    pub use crate::eigen2::SymmetricEigen2;
+    #[cfg(feature = "f64")]
+    pub use crate::eigen2::DSymmetricEigen2;
+    pub use crate::eigen3::{SymmetricEigen3, SymmetricEigen3A};
+    #[cfg(feature = "f64")]
+    pub use crate::eigen3::DSymmetricEigen3;
     pub use crate::matrix_ext::MatExt;
-    pub use crate::pose2::{DPose2, Pose2};
-    pub use crate::pose3::{DPose3, Pose3};
-    pub use crate::rot2::{DRot2, Rot2};
-    pub use crate::rot3::{DRot3, Rot3};
-    pub use crate::svd2::{DSvd2, Svd2};
-    pub use crate::svd3::{DSvd3, Svd3, Svd3A};
+    pub use crate::pose2::Pose2;
+    #[cfg(feature = "f64")]
+    pub use crate::pose2::DPose2;
+    pub use crate::pose3::Pose3;
+    #[cfg(feature = "f64")]
+    pub use crate::pose3::DPose3;
+    pub use crate::rot2::Rot2;
+    #[cfg(feature = "f64")]
+    pub use crate::rot2::DRot2;
+    pub use crate::rot3::Rot3;
+    #[cfg(feature = "f64")]
+    pub use crate::rot3::DRot3;
+    pub use crate::svd2::Svd2;
+    #[cfg(feature = "f64")]
+    pub use crate::svd2::DSvd2;
+    pub use crate::svd3::{Svd3, Svd3A};
+    #[cfg(feature = "f64")]
+    pub use crate::svd3::DSvd3;
 }
