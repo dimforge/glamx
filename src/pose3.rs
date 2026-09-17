@@ -384,10 +384,7 @@ macro_rules! impl_pose3 {
         impl From<($Vec3, $Rot3)> for $Pose3 {
             #[inline]
             fn from((translation, rotation): ($Vec3, $Rot3)) -> Self {
-                Self {
-                    translation,
-                    rotation,
-                }
+                Self::from_parts(translation, rotation)
             }
         }
 
