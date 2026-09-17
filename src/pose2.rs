@@ -512,6 +512,16 @@ mod tests {
         assert_relative_eq!(p.translation.y, p2.translation.y, epsilon = 1e-6);
     }
 
+    #[test]
+    fn test_pose2_lerp_across_branch_cut() {
+        let p1 = Pose2::new(glam::Vec2::new(0.0, 0.0), 3.13);
+        let p2 = Pose2::new(glam::Vec2::new(2.0, 4.0), 3.15);
+        let mid = p1.lerp(&p2, 0.5);
+        assert_relative_eq!(mid.rotation.angle(), 3.14, epsilon = 1e-6);
+        assert_relative_eq!(mid.translation.x, 1.0, epsilon = 1e-6);
+        assert_relative_eq!(mid.translation.y, 2.0, epsilon = 1e-6);
+    }
+
     #[cfg(feature = "f64")]
     #[test]
     fn test_dpose2_new() {

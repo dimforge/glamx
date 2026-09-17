@@ -203,10 +203,14 @@ macro_rules! impl_rot2 {
             }
 
             /// Spherical linear interpolation between two rotations.
+            ///
+            /// Interpolates along the shortest arc: the result is `self` at `t == 0` and `other`
+            /// at `t == 1`, whichever branch of `angle` the two rotations fall on. Interpolating
+            /// their angles instead would take the long way around whenever the arc crosses the
+            /// `-pi`/`pi` cut.
             #[inline]
             pub fn slerp(&self, other: &Self, t: $Real) -> Self {
-                let angle_diff = other.angle() - self.angle();
-                Self::new(self.angle() + t * angle_diff)
+                *self * Self::new(self.angle_between(other) * t)
             }
 
             /// Raises this rotation to a power.
@@ -502,6 +506,33 @@ mod tests {
         let r1 = Rot2::new(0.0);
         let r2 = Rot2::new(PI / 2.0);
         assert_relative_eq!(r1.angle_between(&r2), PI / 2.0, epsilon = 1e-6);
+    }
+
+    #[test]
+    fn test_rot2_slerp() {
+        let r1 = Rot2::new(0.2);
+        let r2 = Rot2::new(1.0);
+        assert_relative_eq!(r1.slerp(&r2, 0.0).angle(), 0.2, epsilon = 1e-6);
+        assert_relative_eq!(r1.slerp(&r2, 1.0).angle(), 1.0, epsilon = 1e-6);
+        assert_relative_eq!(r1.slerp(&r2, 0.5).angle(), 0.6, epsilon = 1e-6);
+        assert!(r1.slerp(&r2, 0.5).is_normalized());
+    }
+
+    #[test]
+    fn test_rot2_slerp_shortest_arc() {
+        // The interpolation from 0 to 3pi/2 goes backwards through -3pi/4, not forwards.
+        let r1 = Rot2::new(0.0);
+        let r2 = Rot2::new(3.0 * PI / 2.0);
+        assert_relative_eq!(r1.slerp(&r2, 0.5).angle(), -PI / 4.0, epsilon = 1e-6);
+    }
+
+    #[test]
+    fn test_rot2_slerp_across_branch_cut() {
+        // `angle` wraps to (-pi, pi], so these two are 0.02 rad apart, not 6.26.
+        let r1 = Rot2::new(3.13);
+        let r2 = Rot2::new(3.15);
+        assert_relative_eq!(r1.slerp(&r2, 0.5).angle(), 3.14, epsilon = 1e-6);
+        assert_relative_eq!(r1.slerp(&r2, 1.0).angle(), r2.angle(), epsilon = 1e-6);
     }
 
     #[cfg(feature = "f64")]

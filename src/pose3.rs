@@ -7,7 +7,7 @@ use core::ops::{Mul, MulAssign};
 
 /// Macro to generate a 3D pose type for a specific scalar type.
 macro_rules! impl_pose3 {
-    ($Pose3:ident, $Rot3:ident, $Real:ty, $Vec3:ty, $Mat4: ty $(, $Padding: ty, $bytemuck: ident)?) => {
+    ($Pose3:ident, $Rot3:ident, $Real:ty, $Vec3:ty, $Mat4: ty, $camera: ident $(, $Padding: ty, $bytemuck: ident)?) => {
         #[doc = concat!("A 3D pose (rotation + translation), representing a rigid body transformation (", stringify!($Real), " precision).")]
         #[derive(Copy, Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -225,7 +225,7 @@ macro_rules! impl_pose3 {
             ///   requirement of this parameter is to not be collinear to target - eye.
             #[inline]
             pub fn look_at_rh(eye: $Vec3, target: $Vec3, up: $Vec3) -> $Pose3 {
-                let rotation = <$Rot3>::look_at_rh(eye.into(), target.into(), up.into());
+                let rotation = glam::$camera::rh::view::look_at_quat(eye.into(), target.into(), up.into());
                 let translation = rotation * (-eye);
 
                 $Pose3 {
@@ -248,7 +248,8 @@ macro_rules! impl_pose3 {
             #[inline]
             pub fn face_towards(eye: $Vec3, target: $Vec3, up: $Vec3) -> $Pose3 {
                 $Pose3 {
-                    rotation: <$Rot3>::look_at_lh(eye.into(), target.into(), up.into()).inverse(),
+                    rotation: glam::$camera::lh::view::look_at_quat(eye.into(), target.into(), up.into())
+                        .inverse(),
                     translation: eye,
                     $(padding: 0 as $Padding,)*
                 }
@@ -413,10 +414,19 @@ macro_rules! impl_pose3 {
     };
 }
 
-impl_pose3!(Pose3, Rot3, f32, glam::Vec3, glam::Mat4, u32, bytemuck);
-impl_pose3!(Pose3A, Rot3, f32, glam::Vec3A, glam::Mat4);
+impl_pose3!(
+    Pose3,
+    Rot3,
+    f32,
+    glam::Vec3,
+    glam::Mat4,
+    camera,
+    u32,
+    bytemuck
+);
+impl_pose3!(Pose3A, Rot3, f32, glam::Vec3A, glam::Mat4, camera);
 #[cfg(feature = "f64")]
-impl_pose3!(DPose3, DRot3, f64, glam::DVec3, glam::DMat4);
+impl_pose3!(DPose3, DRot3, f64, glam::DVec3, glam::DMat4, dcamera);
 
 // f32 <-> f64 conversions
 #[cfg(feature = "f64")]
