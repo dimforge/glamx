@@ -1,5 +1,7 @@
-# Unreleased
+# v0.3.1
 
+- Add `From` conversions between `Pose2`/`Pose3` and their `(translation, rotation)` tuples.
+  ([#3](https://github.com/dimforge/glamx/pull/3))
 - Fix `Rot2::slerp` (and therefore `Pose2::lerp`) taking the long way around whenever the arc
   crosses the `-pi`/`pi` cut of `Rot2::angle`. It now interpolates along the shortest arc.
 
