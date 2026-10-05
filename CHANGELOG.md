@@ -1,3 +1,9 @@
+# Unreleased
+
+- Route the trigonometric calls in `SymmetricEigen3::eigenvalues` through `ComplexField`, so the
+  `libm` feature gives platform-independent eigenvalues in `std` builds too.
+  ([#9](https://github.com/dimforge/glamx/issues/9))
+
 # v0.3.1
 
 - Add `From` conversions between `Pose2`/`Pose3` and their `(translation, rotation)` tuples.

@@ -98,12 +98,12 @@ macro_rules! impl_symmetric_eigen3 {
                     } else if r >= 1.0 {
                         0.0
                     } else {
-                        r.acos() / 3.0
+                        <$Real as simba::scalar::ComplexField>::acos(r) / 3.0
                     };
 
                     // The eigenvalues satisfy eigen3 <= eigen2 <= eigen1
-                    let eigen1 = q + 2.0 * p * phi.cos();
-                    let eigen3 = q + 2.0 * p * (phi + 2.0 * pi / 3.0).cos();
+                    let eigen1 = q + 2.0 * p * <$Real as simba::scalar::ComplexField>::cos(phi);
+                    let eigen3 = q + 2.0 * p * <$Real as simba::scalar::ComplexField>::cos(phi + 2.0 * pi / 3.0);
                     let eigen2 = 3.0 * q - eigen1 - eigen3; // trace(mat) = eigen1 + eigen2 + eigen3
                     <$Vec3>::new(eigen3, eigen2, eigen1)
                 }
@@ -316,6 +316,38 @@ impl From<SymmetricEigen3A> for SymmetricEigen3 {
 mod tests {
     use super::*;
     use approx::assert_relative_eq;
+
+    /// With the `libm` feature on, the trigonometric branch must evaluate
+    /// through the `libm` crate rather than the platform math library, so
+    /// results are identical on every platform. Compare bit for bit against
+    /// the same closed form evaluated through `libm` directly.
+    #[cfg(all(feature = "libm", feature = "std"))]
+    #[test]
+    fn eigen_3x3_f64_uses_libm_when_the_feature_is_on() {
+        let mat =
+            glam::DMat3::from_cols_array_2d(&[[2.0, 7.0, 8.0], [7.0, 6.0, 3.0], [8.0, 3.0, 0.0]]);
+        let p1 = mat.y_axis.x.powi(2) + mat.z_axis.x.powi(2) + mat.z_axis.y.powi(2);
+        let q = (mat.x_axis.x + mat.y_axis.y + mat.z_axis.z) / 3.0;
+        let p2 = (mat.x_axis.x - q).powi(2)
+            + (mat.y_axis.y - q).powi(2)
+            + (mat.z_axis.z - q).powi(2)
+            + 2.0 * p1;
+        let p = (p2 / 6.0).sqrt();
+        let r = (1.0 / p * (mat - q * glam::DMat3::IDENTITY)).determinant() / 2.0;
+        let pi = core::f64::consts::PI;
+        let phi = libm::acos(r) / 3.0;
+        let eigen1 = q + 2.0 * p * libm::cos(phi);
+        let eigen3 = q + 2.0 * p * libm::cos(phi + 2.0 * pi / 3.0);
+        let eigen2 = 3.0 * q - eigen1 - eigen3;
+        let expected = glam::DVec3::new(eigen3, eigen2, eigen1);
+
+        let actual = DSymmetricEigen3::eigenvalues(mat);
+        assert_eq!(
+            actual.to_array().map(f64::to_bits),
+            expected.to_array().map(f64::to_bits),
+            "{actual} != {expected}"
+        );
+    }
 
     #[test]
     fn eigen_3x3() {

@@ -103,4 +103,5 @@ rkyv = { version = "0.8", optional = true, default-features = false }
 
 [dev-dependencies]
 approx = "0.5"
+libm = "0.2"
 glam = { version = "0.33", features = ["approx"] }
