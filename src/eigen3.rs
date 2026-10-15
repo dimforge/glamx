@@ -35,13 +35,27 @@ macro_rules! impl_symmetric_eigen3 {
             /// This can be reversed with the [`reverse`](Self::reverse) method.
             pub fn new(mat: $Mat3) -> Self {
                 let eigenvalues = Self::eigenvalues(mat);
-                let eigenvector1 = Self::eigenvector1(mat, eigenvalues.x);
-                let eigenvector2 = Self::eigenvector2(mat, eigenvector1, eigenvalues.y);
-                let eigenvector3 = Self::eigenvector3(eigenvector1, eigenvector2);
+
+                // `eigenvector1` requires an eigenvalue with a multiplicity of 1. Start from the
+                // extreme eigenvalue that is the farthest from the middle one: if two eigenvalues
+                // are equal, it is the remaining one. The middle eigenvector is then computed with
+                // `eigenvector2`, which supports a multiplicity of 2, and the last one by a cross
+                // product, keeping a right-handed basis.
+                let eigenvectors = if eigenvalues.y - eigenvalues.x >= eigenvalues.z - eigenvalues.y {
+                    let eigenvector1 = Self::eigenvector1(mat, eigenvalues.x);
+                    let eigenvector2 = Self::eigenvector2(mat, eigenvector1, eigenvalues.y);
+                    let eigenvector3 = Self::eigenvector3(eigenvector1, eigenvector2);
+                    <$Mat3>::from_cols(eigenvector1, eigenvector2, eigenvector3)
+                } else {
+                    let eigenvector3 = Self::eigenvector1(mat, eigenvalues.z);
+                    let eigenvector2 = Self::eigenvector2(mat, eigenvector3, eigenvalues.y);
+                    let eigenvector1 = eigenvector2.cross(eigenvector3);
+                    <$Mat3>::from_cols(eigenvector1, eigenvector2, eigenvector3)
+                };
 
                 Self {
                     eigenvalues,
-                    eigenvectors: <$Mat3>::from_cols(eigenvector1, eigenvector2, eigenvector3),
+                    eigenvectors,
                 }
             }
 
@@ -328,19 +342,25 @@ mod tests {
             glam::Vec3::new(-7.6051016780, 0.5774961930, 15.0276054850),
             epsilon = 1.0e-6
         );
-        assert_relative_eq!(
-            glam::Mat3::from_cols(
-                eigen.eigenvectors.x_axis,
-                eigen.eigenvectors.y_axis,
-                eigen.eigenvectors.z_axis
-            ),
-            glam::Mat3::from_cols(
-                glam::Vec3::new(1.0754474819, -0.3328260589, -1.0).normalize(),
-                glam::Vec3::new(-0.5420669703, 1.2530131898, -1.0).normalize(),
-                glam::Vec3::new(1.3587443369, 1.3858835966, 1.0).normalize()
-            ),
-            epsilon = 1.0e-6
-        );
+        // Eigenvectors are only defined up to their sign.
+        let expected = [
+            glam::Vec3::new(1.0754474819, -0.3328260589, -1.0).normalize(),
+            glam::Vec3::new(-0.5420669703, 1.2530131898, -1.0).normalize(),
+            glam::Vec3::new(1.3587443369, 1.3858835966, 1.0).normalize(),
+        ];
+        let actual = [
+            eigen.eigenvectors.x_axis,
+            eigen.eigenvectors.y_axis,
+            eigen.eigenvectors.z_axis,
+        ];
+        for (actual, expected) in actual.into_iter().zip(expected) {
+            assert_relative_eq!(
+                actual * actual.dot(expected).signum(),
+                expected,
+                epsilon = 1.0e-6
+            );
+        }
+        assert_relative_eq!(eigen.eigenvectors.determinant(), 1.0, epsilon = 1.0e-6);
     }
 
     #[test]
@@ -405,5 +425,46 @@ mod tests {
             glam::Mat3::IDENTITY,
             epsilon = 1e-6
         );
+    }
+
+    /// Checks that `eigen` is a right-handed orthonormal eigendecomposition of `mat`.
+    fn assert_reconstructs(mat: glam::Mat3, eigen: SymmetricEigen3) {
+        let v = eigen.eigenvectors;
+        assert_relative_eq!(v * v.transpose(), glam::Mat3::IDENTITY, epsilon = 1.0e-5);
+        assert_relative_eq!(v.determinant(), 1.0, epsilon = 1.0e-5);
+        assert_relative_eq!(
+            v * glam::Mat3::from_diagonal(eigen.eigenvalues) * v.transpose(),
+            mat,
+            epsilon = 1.0e-5
+        );
+    }
+
+    #[test]
+    fn eigen_3x3_repeated_eigenvalue() {
+        // Rotated matrices with a repeated eigenvalue (e.g. the inertia tensor of an axisymmetric
+        // body). The eigenvectors of a repeated eigenvalue are only defined up to a rotation in
+        // their plane, so check the reconstruction instead of the eigenvectors themselves.
+        let rotations = [
+            glam::Quat::from_axis_angle(glam::Vec3::new(1.0, 2.0, 3.0).normalize(), 0.9),
+            glam::Quat::from_axis_angle(glam::Vec3::new(-2.0, 0.5, 1.0).normalize(), 2.3),
+        ];
+        let diagonals = [
+            // Repeated smallest eigenvalue.
+            glam::Vec3::new(0.02, 0.02, 0.035),
+            // Repeated largest eigenvalue.
+            glam::Vec3::new(1.0, 3.0, 3.0),
+        ];
+
+        for rotation in rotations {
+            for diagonal in diagonals {
+                let r = glam::Mat3::from_quat(rotation);
+                let mat = r * glam::Mat3::from_diagonal(diagonal) * r.transpose();
+                let eigen = SymmetricEigen3::new(mat);
+
+                assert_relative_eq!(eigen.eigenvalues, diagonal, epsilon = 1.0e-5);
+                assert_reconstructs(mat, eigen);
+                assert_reconstructs(mat, SymmetricEigen3A::new(mat.into()).into());
+            }
+        }
     }
 }
