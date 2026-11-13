@@ -1,6 +1,5 @@
 //! SVD decomposition for 2x2 matrices.
 
-#[cfg(not(feature = "std"))]
 use simba::scalar::{ComplexField, RealField};
 
 /// Macro to generate Svd2 for a specific scalar type.
@@ -50,16 +49,20 @@ macro_rules! impl_svd2 {
                 let sy_sign: $Real = if sy < 0.0 { -1.0 } else { 1.0 };
                 let singular_values = <$Vec2>::new(sx, sy * sy_sign);
 
-                let a2 = h.atan2(e);
+                let a2 = <$Real as RealField>::atan2(h, e);
                 // When r ≈ 0 (pure rotation case), a1 is arbitrary. Set a1 = a2
                 // so that theta = 0 and phi = a2 (the rotation angle).
-                let a1 = if r < 1e-10 { a2 } else { g.atan2(f) };
+                let a1 = if r < 1e-10 {
+                    a2
+                } else {
+                    <$Real as RealField>::atan2(g, f)
+                };
                 let theta = (a2 - a1) * 0.5;
                 let phi = (a2 + a1) * 0.5;
-                let st = theta.sin();
-                let ct = theta.cos();
-                let sp = phi.sin();
-                let cp = phi.cos();
+                let st = <$Real as ComplexField>::sin(theta);
+                let ct = <$Real as ComplexField>::cos(theta);
+                let sp = <$Real as ComplexField>::sin(phi);
+                let cp = <$Real as ComplexField>::cos(phi);
 
                 let u = <$Mat2>::from_cols(<$Vec2>::new(cp, sp), <$Vec2>::new(-sp, cp));
                 let vt = <$Mat2>::from_cols(
@@ -182,5 +185,22 @@ mod tests {
         let svd = DSvd2::from_matrix(mat);
 
         assert_relative_eq!(svd.recompose(), mat, epsilon = 1e-10);
+    }
+
+    #[cfg(feature = "libm")]
+    #[test]
+    fn svd_2x2_is_bit_exact_with_libm() {
+        let mat = glam::Mat2::from_cols_array_2d(&[[12.0, 3.0], [-2.0, 1.0]]);
+        let svd = Svd2::from_matrix(mat);
+
+        assert_eq!(
+            svd.u.to_cols_array().map(f32::to_bits),
+            [0x3f795259, 0x3e685e72, 0xbe685e72, 0x3f795259]
+        );
+        assert_eq!(svd.s.to_array().map(f32::to_bits), [0x4147ca3d, 0x3fb88388]);
+        assert_eq!(
+            svd.vt.to_cols_array().map(f32::to_bits),
+            [0x3f7d8ea3, 0x3e0d1fe2, 0xbe0d1fe2, 0x3f7d8ea3]
+        );
     }
 }

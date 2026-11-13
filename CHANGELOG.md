@@ -1,3 +1,9 @@
+# Unreleased
+
+- Route the trigonometric calls in `Svd2::from_matrix` through simba's `ComplexField`/`RealField`,
+  so the `libm` feature gives platform-independent results in `std` builds too.
+  ([#9](https://github.com/dimforge/glamx/issues/9))
+
 # v0.3.1
 
 - Add `From` conversions between `Pose2`/`Pose3` and their `(translation, rotation)` tuples.
