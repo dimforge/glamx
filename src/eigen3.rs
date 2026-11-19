@@ -11,7 +11,6 @@
 use glam::Vec3Swizzles;
 use num_traits::float::FloatConst;
 
-#[cfg(not(feature = "std"))]
 use simba::scalar::ComplexField;
 
 /// Macro to generate SymmetricEigen3 for a specific scalar type.
@@ -98,12 +97,12 @@ macro_rules! impl_symmetric_eigen3 {
                     } else if r >= 1.0 {
                         0.0
                     } else {
-                        r.acos() / 3.0
+                        ComplexField::acos(r) / 3.0
                     };
 
                     // The eigenvalues satisfy eigen3 <= eigen2 <= eigen1
-                    let eigen1 = q + 2.0 * p * phi.cos();
-                    let eigen3 = q + 2.0 * p * (phi + 2.0 * pi / 3.0).cos();
+                    let eigen1 = q + 2.0 * p * ComplexField::cos(phi);
+                    let eigen3 = q + 2.0 * p * ComplexField::cos(phi + 2.0 * pi / 3.0);
                     let eigen2 = 3.0 * q - eigen1 - eigen3; // trace(mat) = eigen1 + eigen2 + eigen3
                     <$Vec3>::new(eigen3, eigen2, eigen1)
                 }
